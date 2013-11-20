@@ -15,10 +15,17 @@ function rates = predict_rating(Xt_counts, Xq_counts, Xt_additional_features,...
 % 10 minutes. Therefore, you should train your model BEFORE submission, save
 % it in a .mat file, and load it here.
 
-% YOUR CODE GOES HERE
-% THIS IS JUST AN EXAMPLE
+
 N = size(Xq_counts, 1);
 
-rates = int8(ones(N,1));
+load('models/models.mat')
+
+addpath testers
+
+if exist('model_clr','var')
+   Yhat_clr = counts_logit_reg_predict(Xq_counts,model_clr);
+end
+
+rates = int8(Yhat_clr);
 
 end
