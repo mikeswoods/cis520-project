@@ -4,6 +4,7 @@ from scipy.io import whosmat, loadmat, savemat
 import numpy
 import re
 import sys
+import os
 
 
 # Adapted from http://pastebin.com/XrwTMrj5
@@ -65,17 +66,16 @@ def singularize(word):
 	return word
 
  
-def build_word_index(dataset, vocab_key):
+def build_word_index(vocab):
 	"""
 	Builds a word-to-index dict based on the given dataset
 
-	@param dataset: The review dataset; this arg is expected to have the key 'vocab'
-		defined
+	@param vocab: Review dataset vocab array
 	@rtype: dict
 	@returns: A dict, where the key is the textual word, and the value is the corresponding
 		numeric index of the word in the dataset's 'vocab' array
 	"""
-	return {normalize(word_cell[0]): index for (index, word_cell) in enumerate(dataset[vocab_key][0])}
+	return {normalize(word_cell[0]): index for (index, word_cell) in enumerate(vocab)}
 
 
 def find_word(word_index, word):
@@ -103,7 +103,7 @@ def find_word(word_index, word):
 	raise ValueError("'%s' / '%s' not found in word index" % (original_word, word))	
 
 
-def bigrams(word_index, datasets, failed_set=None, print_messages=False):
+def bigrams(word_index, datasets, failed_words=None, print_messages=False):
 	"""
 	Returns an iterator that yields a tuple of the following form:
 
@@ -113,12 +113,9 @@ def bigrams(word_index, datasets, failed_set=None, print_messages=False):
 
 	@type word_index: dict
 	@param word_index: The word index dict created by build_word_index()
-	@type datasets: list
-	@param datasets:
-	@type failed_set:
-	@param failed_set:
+	@param datasets: A list of datasets to process the bigrams of
 	@type print_messages: bool
-	@pparam print_messages: If True, output messages will be displayed for invalid
+	@param print_messages: If True, output messages will be displayed for invalid
 		bigrams encountered
 	"""
 	line = '*' * 80
@@ -141,27 +138,27 @@ def bigrams(word_index, datasets, failed_set=None, print_messages=False):
 			for j in range(N-1):
 
 				pair = [(None, None), (None, None)]  # Each bigram is itself a tuple of (index, word)
-				failed_words = [None, None]
+				failed = [None, None]
 				skip = False
 
 				for (k, word) in enumerate((words[j][0][0], words[j+1][0][0])):
 					try:
 						pair[k] = find_word(word_index, word)
 					except:
-						failed_words[k] = word
+						failed[k] = word
 						skip = True
 
 				if skip:
 					if print_messages:
 						print line
-						print "Bad bigram -> (%s, %s) " % tuple(failed_words)
+						print "Bad bigram -> (%s, %s) " % tuple(failed)
 						print line
 
 					# Keep track of failed words--optional:
-					if isinstance(failed_set, set):
-						for failed_word in failed_words:
+					if isinstance(failed_words, set):
+						for failed_word in failed:
 							if failed_word is not None:
-								failed_set.add(failed_word)
+								failed_words.add(failed_word)
 
 					continue
 
@@ -170,16 +167,15 @@ def bigrams(word_index, datasets, failed_set=None, print_messages=False):
 
 def build_bigram_counts(word_index, datasets):
 	"""
-	@type word_index: dict
 	@param word_index: The word index dict created by build_word_index()
-	@type *datasets:
-	@param *datasets:
+	@param datasets: A list of datasets to count the bigrams of
+	@param failed_set: The set of words that could not be matched to an entry in vocab
 	"""
-	failed_set = set()
+	failed_words = set()
 	prev_row = None
 	counts = {}
 
-	for (row, bigram) in bigrams(word_index, datasets, failed_set=failed_set):
+	for (row, bigram) in bigrams(word_index, datasets, failed_words=failed_words):
 
 		if bigram not in counts:
 			counts[bigram] = 1
@@ -191,7 +187,7 @@ def build_bigram_counts(word_index, datasets):
 
 		prev_row = row
 
-	return counts
+	return (counts, failed_words)
 
 
 def build_sparse_array(counts):
@@ -218,6 +214,24 @@ def build_sparse_array(counts):
 	return I, J, S
 
 
+def print_metrics(counts, vocab, failed_words):
+	"""
+	Prints frequency metrics for the given counts
+	"""
+	# Sort by counts in descending order:
+	sorted_tuples = sorted(counts.items(), lambda x,y: -cmp(x[1], y[1]))
+
+	# Frequencies
+	with open(os.getcwd()+"/report_bigram_freq.txt", 'w') as f:
+		for (bigram, count) in sorted_tuples:
+			print >>f, "%s %s %s" % (vocab[bigram[0]][0].encode('utf-8'), vocab[bigram[1]][0].encode('utf-8'), count)
+
+	# Failed words:
+	with open(os.getcwd()+"/report_failed_words.txt", 'w') as f:
+		for word in failed_words:
+			print >>f, "%s" % (word.encode('utf-8'))
+
+
 def save_sparse_array(filename, I, J, S):
 	"""
 	Given I, J, and S arrays, this function will write them to a matlab .mat file
@@ -241,16 +255,21 @@ if __name__ == "__main__":
 	print ">> Loading metadata file %s..." % (metadata_matfile)
 	metadata = loadmat(metadata_matfile)
 
+	vocab = review_dataset['vocab'][0]
+
 	print ">> Building word index..."
-	word_index = build_word_index(review_dataset, 'vocab')
+	word_index = build_word_index(vocab)
 
 	print ">> Building bigram counts..."
-	counts = build_bigram_counts(word_index, (metadata['train_metadata'], metadata['quiz_metadata']))
+	(counts, failed_words) = build_bigram_counts(word_index, (metadata['train_metadata'], metadata['quiz_metadata']))
 
 	print ">> Generating sparse array..."
 	I, J, S = build_sparse_array(counts)
 
 	print ">> Writing Matlab output to %s..." % (output_filename,)
 	save_sparse_array(output_filename, I, J, S)
+
+	print ">> Printing bigram frequencies..."
+	print_metrics(counts, vocab, failed_words)
 
 	print "Done!"
