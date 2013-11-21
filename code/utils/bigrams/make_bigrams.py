@@ -224,8 +224,8 @@ def print_metrics(counts, vocab, failed_words):
 	with open(os.getcwd()+"/report_bigram_freq.txt", 'w') as f:
 		for (bigram, count) in sorted_tuples:
 			print >>f, "%s %s | %s %s | %s" % \
-				(bigram[0],
-				 bigram[1],
+				(bigram[0]+1,  # Normalize to Marlab's 1 based indexing scheme:
+				 bigram[1]+1,  # Normalize to Marlab's 1 based indexing scheme:
 				 vocab[bigram[0]][0].encode('utf-8'), 
 				 vocab[bigram[1]][0].encode('utf-8'), 
 				 count)
