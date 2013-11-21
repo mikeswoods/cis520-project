@@ -160,9 +160,8 @@ def bigrams(word_index, datasets, failed_words=None, print_messages=False):
 							if failed_word is not None:
 								failed_words.add(failed_word)
 
-					continue
-
-				yield (i, (pair[0][0], pair[1][0]))
+				else:
+					yield (i, (pair[0][0], pair[1][0]))
 
 
 def build_bigram_counts(word_index, datasets):
@@ -224,7 +223,12 @@ def print_metrics(counts, vocab, failed_words):
 	# Frequencies
 	with open(os.getcwd()+"/report_bigram_freq.txt", 'w') as f:
 		for (bigram, count) in sorted_tuples:
-			print >>f, "%s %s %s" % (vocab[bigram[0]][0].encode('utf-8'), vocab[bigram[1]][0].encode('utf-8'), count)
+			print >>f, "%s %s | %s %s | %s" % \
+				(bigram[0],
+				 bigram[1],
+				 vocab[bigram[0]][0].encode('utf-8'), 
+				 vocab[bigram[1]][0].encode('utf-8'), 
+				 count)
 
 	# Failed words:
 	with open(os.getcwd()+"/report_failed_words.txt", 'w') as f:
