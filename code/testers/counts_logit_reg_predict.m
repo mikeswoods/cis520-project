@@ -5,4 +5,4 @@ init = rand(N,1)*5;
 
 addpath liblinear-1.94/matlab
 
-Yhat_clr = predict(rand(N,1)*5,Xq_counts,model_clr);
+Yhat_clr = predict(init,X_test,model_clr);
