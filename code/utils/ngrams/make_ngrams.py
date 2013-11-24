@@ -174,7 +174,7 @@ def print_metrics(counts, vocab, skipped_rows):
 	with open(os.getcwd() + "/report_skipped_rows.txt", 'w') as f:
 		for (row, words) in skipped_rows:
 			try:
-				print >>f, "%s %s" % (row, words.encode('utf-8'))
+				print >>f, row, words
 			except:
 				raise
 
