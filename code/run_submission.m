@@ -16,7 +16,7 @@ addpath learners
 
 fprintf('Learning models...\n')
 % logistic regression on counts
-model_clr = counts_logit_reg(Yt,Xt_counts);
+model_clr = counts_logit_reg_train(Yt,Xt_counts);
 
 fprintf('Saving models...\n')
 if exist('models/models.mat','file')
