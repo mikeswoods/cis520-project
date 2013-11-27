@@ -1,2 +1,10 @@
 *.pyc
 *.m~
+.DS_Store
+*.mexglx
+*.mexmac
+*.mexmaci
+*.mexmaci64
+*.mexa64
+*.mex
+code/lib*/**
