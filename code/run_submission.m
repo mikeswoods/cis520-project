@@ -14,9 +14,12 @@ clear quiz train
 
 addpath learners
 
+%X_counts = vertcat(Xt_counts, Xq_counts);
+
 fprintf('Learning models...\n')
 % logistic regression on counts
 model_clr = counts_logit_reg_train(Yt,Xt_counts);
+model_nb = NaiveBayes.fit(Xt_counts, Yt, 'Distribution', 'mn');
 
 fprintf('Saving models...\n')
 if exist('models/models.mat','file')

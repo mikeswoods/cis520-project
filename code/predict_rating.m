@@ -26,6 +26,10 @@ if exist('model_clr','var')
    Yhat_clr = counts_logit_reg_predict(Xq_counts,model_clr);
 end
 
-rates = int8(Yhat_clr);
+if exist('model_nb','var')
+   Yhat_nb = predict(model_nb,Xq_counts);
+end
+
+rates = int8(((3.*Yhat_nb) + (7.* Yhat_clr)) ./ 10);
 
 end
