@@ -12,6 +12,7 @@ clear quiz train
 
 %% Get model
 
+addpath packages
 addpath learners
 
 fprintf('Learning models...\n')
@@ -36,4 +37,4 @@ rates = predict_rating(Xt_counts, Xq_counts, Xt_additional_features,...
                        Xq_additional_features, Yt);
 
 %% Save results to a text file for submission
-dlmwrite('submit.txt',rates,'precision','%d');
+dlmwrite('submit.txt', rates,'precision','%d');
