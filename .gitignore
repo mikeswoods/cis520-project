@@ -8,3 +8,4 @@
 *.mexa64
 *.mex
 code/lib*/**
+*.asv
