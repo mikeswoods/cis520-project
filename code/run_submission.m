@@ -1,6 +1,7 @@
 clear;
 fprintf('Loading data...\n')
-load ../data/review_dataset.mat
+%load ../data/review_dataset.mat
+load ../data/small/review_dataset_first_100.mat
 
 Xt_counts = train.counts;
 Yt = train.labels;
@@ -13,31 +14,42 @@ clear quiz train
 %% Get model
 
 addpath packages
-addpath learners
 
-%X_counts = vertcat(Xt_counts, Xq_counts);
+% The following models will be run. Each entry is the name of a model 
+% package in the code/packages directory.
 
-fprintf('Learning models...\n')
-% logistic regression on counts
-model_clr = counts_logit_reg_train(Yt,Xt_counts);
-model_nb = NaiveBayes.fit(Xt_counts, Yt, 'Distribution', 'mn');
+run_packages = {'counts_logit_reg', 'nb'};
+K = numel(run_packages);
+
+for i = 1:K
+
+    pkg_name = run_packages{i};
+    fprintf('Learning model "%s"...\n', pkg_name);
+
+    % Get the <package>.train function from eah method as the trainer
+    trainer = str2func([pkg_name '.train']);
+    
+    % Each model has an entry in the model struct given by its package
+    % name. It can be accessed dynamically using the sytax
+    % <var>.("package-name")
+    models.(pkg_name) = trainer(Xt_counts, Yt);
+end
 
 fprintf('Saving models...\n')
-if exist('models/models.mat','file')
-   movefile('models/models.mat',['models/models_backup_' datestr(now,30) '.mat'])
-end
-save('models/models.mat','-regexp','model_\w*')
 
+save_models(models);
 
 Xt_additional_features = [];
 Xq_additional_features = [];
 
 
 %% Run algorithm
+
 fprintf('Predicting labels...')
 
 rates = predict_rating(Xt_counts, Xq_counts, Xt_additional_features,...
                        Xq_additional_features, Yt);
 
 %% Save results to a text file for submission
+
 dlmwrite('submit.txt', rates,'precision','%d');

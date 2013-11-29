@@ -17,19 +17,31 @@ function rates = predict_rating(Xt_counts, Xq_counts, Xt_additional_features,...
 
 N = size(Xq_counts, 1);
 
+% models.mat should contain a single struct "models". Each field in 
+% "models" contains the learner model object used to make predictions
+% below
+
 load('models/models.mat')
 
 addpath packages
-addpath testers
 
-if exist('model_clr','var')
-   Yhat_clr = counts_logit_reg_predict(Xq_counts,model_clr);
+run_packages = fieldnames(models);
+K = numel(run_packages);
+
+for i = 1:K
+
+    pkg_name = run_packages{i};
+    fprintf('Predicting for model "%s"...\n', pkg_name);
+
+    % Get the <package>.predict function from eah method as the predictor
+    predictor = str2func([pkg_name '.predict']);
+    
+    % Each model has an entry in the Yhat struct given by its package
+    % name. It can be accessed dynamically using the sytax
+    % <var>.("package-name")
+    Yhat.(pkg_name) = predictor(Xt_counts, models.(pkg_name));
 end
 
-if exist('model_nb','var')
-   Yhat_nb = predict(model_nb,Xq_counts);
-end
-
-rates = int8(((3.*Yhat_nb) + (7.* Yhat_clr)) ./ 10);
+rates = int8(((3 .* Yhat.nb) + (7 .* Yhat.counts_logit_reg)) ./ 10);
 
 end
