@@ -1,7 +1,7 @@
 clear;
 fprintf('Loading data...\n')
-%load ../data/review_dataset.mat
-load ../data/small/review_dataset_first_100.mat
+load ../data/review_dataset.mat
+%load ../data/small/review_dataset_first_100.mat
 
 Xt_counts = train.counts;
 Yt = train.labels;
