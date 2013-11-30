@@ -1,7 +1,8 @@
 clear;
 fprintf('Loading data...\n')
-load ../data/review_dataset.mat
+%load ../data/review_dataset.mat
 %load ../data/small/review_dataset_first_100.mat
+load ../data/small/review_dataset_first_1000.mat
 
 Xt_counts = train.counts;
 Yt = train.labels;
@@ -15,33 +16,14 @@ clear quiz train
 
 addpath packages
 
-% The following models will be run. Each entry is the name of a model 
-% package in the code/packages directory.
-
-run_packages = {'counts_logit_reg', 'nb'};
-K = numel(run_packages);
-
-for i = 1:K
-
-    pkg_name = run_packages{i};
-    fprintf('Learning model "%s"...\n', pkg_name);
-
-    % Get the <package>.train function from eah method as the trainer
-    trainer = str2func([pkg_name '.train']);
-    
-    % Each model has an entry in the model struct given by its package
-    % name. It can be accessed dynamically using the sytax
-    % <var>.("package-name")
-    models.(pkg_name) = trainer(Xt_counts, Yt);
-end
+models = generate_models(Xt_counts, Yt, 'counts_logit_reg', 'nb');
 
 fprintf('Saving models...\n')
 
-save_models(models);
+save_models('models.mat', models);
 
 Xt_additional_features = [];
 Xq_additional_features = [];
-
 
 %% Run algorithm
 
