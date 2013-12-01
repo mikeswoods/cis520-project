@@ -1,6 +1,8 @@
 clear;
 fprintf('Loading data...\n')
 load ../data/review_dataset.mat
+%load ../data/small/review_dataset_first_1000.mat
+%load ../data/small/review_dataset_first_5000.mat
 
 Xt_counts = train.counts;
 Yt = train.labels;
@@ -12,31 +14,24 @@ clear quiz train
 
 %% Get model
 
-addpath learners
+addpath packages
 
-%X_counts = vertcat(Xt_counts, Xq_counts);
-
-fprintf('Learning models...\n')
-% logistic regression on counts
-model_clr = counts_logit_reg_train(Yt,Xt_counts);
-model_nb = NaiveBayes.fit(Xt_counts, Yt, 'Distribution', 'mn');
+models = generate_models(Xt_counts, Yt, 'counts_logit_reg', 'nb');
 
 fprintf('Saving models...\n')
-if exist('models/models.mat','file')
-   movefile('models/models.mat',['models/models_backup_' datestr(now,30) '.mat'])
-end
-save('models/models.mat','-regexp','model_\w*')
 
+save_models('models.mat', models);
 
 Xt_additional_features = [];
 Xq_additional_features = [];
 
-
 %% Run algorithm
-fprintf('Predicting labels...')
+
+fprintf('Predicting labels...\n')
 
 rates = predict_rating(Xt_counts, Xq_counts, Xt_additional_features,...
                        Xq_additional_features, Yt);
 
 %% Save results to a text file for submission
-dlmwrite('submit.txt',rates,'precision','%d');
+
+dlmwrite('submit.txt', rates,'precision','%d');
