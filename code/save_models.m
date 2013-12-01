@@ -11,10 +11,15 @@ function save_models(filename, models)
 %   model to be saved
 %
 
-if exist('models/models.mat', 'file')
-   movefile('models/models.mat', ['models/models_backup_' datestr(now,30) '.mat'])
+file_path = ['models/' filename];
+
+if exist(file_path, 'file')
+   movefile(file_path, ['models/models_backup_' datestr(now,30) '.mat'])
 end
 
-save(['models/' filename], 'models');
+% A numeric index assigned to each model as well:
+models_idx = fieldnames(models);
+
+save(file_path, 'models', 'models_idx');
 
 end

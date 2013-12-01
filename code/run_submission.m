@@ -1,8 +1,8 @@
 clear;
 fprintf('Loading data...\n')
-%load ../data/review_dataset.mat
-%load ../data/small/review_dataset_first_100.mat
-load ../data/small/review_dataset_first_1000.mat
+load ../data/review_dataset.mat
+%load ../data/small/review_dataset_first_1000.mat
+%load ../data/small/review_dataset_first_5000.mat
 
 Xt_counts = train.counts;
 Yt = train.labels;
@@ -27,7 +27,7 @@ Xq_additional_features = [];
 
 %% Run algorithm
 
-fprintf('Predicting labels...')
+fprintf('Predicting labels...\n')
 
 rates = predict_rating(Xt_counts, Xq_counts, Xt_additional_features,...
                        Xq_additional_features, Yt);

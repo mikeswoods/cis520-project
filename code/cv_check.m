@@ -1,4 +1,4 @@
-function [rmses] = cv_check(X, Y, W, learners, nfolds, nshuffle)
+function [rmses] = cv_check(X, Y, W, learners, nfolds, combine, nshuffle)
 %
 % Calculates the root-mean squared error of the given prediction data
 % by way of N-fold cross validation.
@@ -34,59 +34,75 @@ function [rmses] = cv_check(X, Y, W, learners, nfolds, nshuffle)
 % [nfolds] is an integer > 0 that specifies the number of 
 %   cross-validationfolds that X and Y should be divided into. If an
 %   explicit value for nfold is omitted, a default value of 5 will be used.
+%
+% [combine] How the predictions will be combined. 
+%   - 'average' for weighted average
+%   - 'majority' for weighted majority vote.
+%   If omitted, 'average' will be used
 
-    if ~exist('nfolds', 'var')
-       nfolds = 5;
-    end
+if ~exist('nfolds', 'var')
+   nfolds = 5;
+end
 
-    N = size(X, 1);
-    K = numel(learners);
+if ~exist('combine', 'var')
+    combine = 'average';
+end
 
-    % Divides the training data into N-folds, each as close to equally sized 
-    % as possible:
+N = size(X, 1);
+K = numel(learners);
 
-    cvidx = repmat(1:nfolds, 1, ceil(N / nfolds));
-    cvidx = cvidx(1:N);
+% Divides the training data into N-folds, each as close to equally sized 
+% as possible:
 
-    if ~exist('nshuffle', 'var')
-        nshuffle = randperm(N);
-    end
+cvidx = repmat(1:nfolds, 1, ceil(N / nfolds));
+cvidx = cvidx(1:N);
 
-    cvidx = cvidx(nshuffle);
+if ~exist('nshuffle', 'var')
+    nshuffle = randperm(N);
+end
 
-    rmses = nan(nfolds, 1);
-    traintimes = nan(nfolds, 1);
+cvidx = cvidx(nshuffle);
 
-    for i = 1:nfolds
+rmses = nan(nfolds, 1);
+traintimes = nan(nfolds, 1);
 
-       tic
-       fprintf('%d/%d ', i, nfolds)
+for i = 1:nfolds
 
-       X_train = X(cvidx ~= i, :);
-       Y_train = Y(cvidx ~= i);
+   tic
+   fprintf('%d/%d ', i, nfolds)
 
-       X_test = X(cvidx == i, :);
-       Y_test = Y(cvidx == i);
-       N_test_size = size(Y_test, 1);
+   X_train = X(cvidx ~= i, :);
+   Y_train = Y(cvidx ~= i);
 
-       % Weighted average:
+   X_test = X(cvidx == i, :);
+   Y_test = Y(cvidx == i);
+   N_test_size = size(Y_test, 1);
 
-       Y_hat = zeros(N_test_size, 1);
-       for j = 1:K
-           test_func = get_test_function(learners{j});
-           Y_hat = Y_hat + (W(j) .* test_func(X_train, Y_train, X_test));
-       end
-       Y_hat = round(Y_hat ./ sum(W));
+   % Weighted average:
 
-       rmses(i) = sqrt(mean((Y_hat - Y_test) .^ 2));
+   Y_hat = zeros(N_test_size, 1);
+   for j = 1:K
+       test_func = get_test_function(learners{j});
+       Y_hat(:, j) = test_func(X_train, Y_train, X_test);
+   end
+   
+   if strcmp(combine, 'average') == 1
+       Y_hat = weighted_average(W, Y_hat);
+   elseif strcmp(combine, 'majority') == 1
+       Y_hat = weighted_majority_vote([1 2 3 4 5], W, Y_hat);
+   else
+       error('combine must either be "average" or "majority"');
+   end
 
-       fprintf(' RMSE: %.3f\n', rmses(i))
+   rmses(i) = sqrt(mean((Y_hat - Y_test) .^ 2));
 
-       traintimes(i) = toc;
-    end
+   fprintf(' RMSE: %.3f\n', rmses(i))
 
-    fprintf('Mean RMSE: %.3f\n', mean(rmses))
-    fprintf('Mean train time: %.3f\n', mean(traintimes))
+   traintimes(i) = toc;
+end
+
+fprintf('Mean RMSE: %.3f\n', mean(rmses))
+fprintf('Mean train time: %.3f\n', mean(traintimes))
 end
 
 function [handle] = get_test_function(name_or_func)
@@ -97,9 +113,10 @@ function [handle] = get_test_function(name_or_func)
 %   handle as-is. If given a string specifying a package name, this 
 %   function will return a function handle for @<package-name>.test
 %
-    if isa(name_or_func, 'function_handle')
-        handle = name_or_func;
-    else
-        handle = str2func([name_or_func '.test']); % Make @<name>.test
-    end
+if isa(name_or_func, 'function_handle')
+    handle = name_or_func;
+else
+    handle = str2func([name_or_func '.test']); % Make @<name>.test
+end
+
 end

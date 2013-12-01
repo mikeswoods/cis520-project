@@ -1,6 +1,6 @@
 function [model] = train(X_train, Y_train, opts)
 %
-% COUNTS_LOGIT_REG.TRAIN(train_labels, train_data, opts)
+% COUNTS_SVM.TRAIN(train_labels, train_data, opts)
 %
 % [X_train] A N x M matrix of training data, where N is the number of
 %   observations, and M is the number of features
@@ -12,8 +12,7 @@ function [model] = train(X_train, Y_train, opts)
 % [model] The trained learner model instance
 %
 
-% best options through CV
-default_opts = '-s 7 -q'; % 7 = 7 -- L2-regularized logistic regression (dual)
+default_opts = '-s 1 -q'; % 1 -- L2-regularized L2-loss support vector classification (dual)
 
 if ~exist('opts', 'var')
    opts = default_opts;
