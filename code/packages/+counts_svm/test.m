@@ -18,6 +18,6 @@ function [Y_predict] = test(X_train, Y_train, X_test)
 
 model = counts_svm.train(X_train, Y_train);
 
-Y_predict = counts_svm.predict(X_test, model);
+Y_predict = counts_svm.predict(model, X_test);
 
 end

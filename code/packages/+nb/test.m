@@ -18,6 +18,6 @@ function [Y_predict] = test(X_train, Y_train, X_test)
 
 model = nb.train(X_train, Y_train);
 
-Y_predict = nb.predict(X_test, model);
+Y_predict = nb.predict(model, X_test);
 
 end
