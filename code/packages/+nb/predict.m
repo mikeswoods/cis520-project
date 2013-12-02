@@ -1,4 +1,4 @@
-function [Y] = predict(X_test, model)
+function [Y] = predict(model, X_test)
 %
 % NB.PREDICT(X_test, model)
 %

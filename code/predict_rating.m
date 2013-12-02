@@ -26,7 +26,7 @@ load('models/models.mat')
 
 addpath packages
 
-N = size(Xt_counts, 1);
+N = size(Xq_counts, 1);
 K = numel(models_idx);
 
 Yhat = NaN(N, K);
@@ -38,15 +38,15 @@ for i = 1:K
 
     % Get the <model_name>.predict function from eah method as the predictor
     predictor = str2func([model_name '.predict']);
-
-    Yhat(:, i) = predictor(Xt_counts, models.(model_name));
+    
+    Yhat(:, i) = predictor(models.(model_name), Xq_counts);
 end
 
 % Weight everything equally for now
 model_weights = ones(1, K);
 
 %rates = weighted_majority_vote([1 2 3 4 5], model_weights, Yhat);
-rates = weighted_average(model_weights, Yhat);
+rates = int8(weighted_average(model_weights, Yhat));
 %rates = int8(((3 .* Yhat.nb) + (7 .* Yhat.counts_logit_reg)) ./ 10);
 
 end

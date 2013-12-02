@@ -18,6 +18,6 @@ function [Y_predict] = test(X_train, Y_train, X_test)
 
 model = counts_logit_reg.train(X_train, Y_train);
 
-Y_predict = counts_logit_reg.predict(X_test, model);
+Y_predict = counts_logit_reg.predict(model, X_test);
 
 end
