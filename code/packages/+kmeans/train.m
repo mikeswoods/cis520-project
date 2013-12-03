@@ -12,7 +12,7 @@ function [model] = train(X_train, Y_train, opts)
 % [model] The trained learner model instance
 
 % 
-default_K = 50; % K = 50
+default_K = 100; % K = 50
 
 if ~exist('opts', 'var')
    K = default_K;
@@ -33,14 +33,22 @@ X_train_svd = U(:,1:75)*S(1:75,1:75);
 %get the predicted value for each cluster
 cluster_predictions = zeros(1,K);
 for j = 1:K
-    current_cluster_indexes = find(clusters == j);
+    current_cluster_indexes = clusters(clusters == j);
     current_cluster_y_values = Y_train(current_cluster_indexes);
     
+    %use the Y value that has the largest number of members in this cluster
     [value_counts,values] = hist(current_cluster_y_values, unique(current_cluster_y_values));
 
     [max_val, max_idx] = max(value_counts);
     
-    cluster_predictions(j) = values(max_idx);
+    %take the max value
+    %cluster_predictions(j) = values(max_idx);
+
+    %take the mean value
+    cluster_predictions(j) = round(mean(current_cluster_y_values));
+    
+    %take some weighted average 
+    %cluster_predictions(j) = (values(max_idx) + round(mean(current_cluster_y_values))) / 2;
 end
 
 model = struct('centroids', centroids, 'cluster_predictions', cluster_predictions);
