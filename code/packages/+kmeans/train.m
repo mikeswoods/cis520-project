@@ -28,7 +28,7 @@ X_train_svd = U(:,1:75)*S(1:75,1:75);
 
 % [W, X_train_svd] = pca_svds(X_train, 75);
 
-[clusters,centroids] = kmeans(X_train_svd,K);
+[clusters,centroids] = kmeans(X_train_svd,K, 'Options', statset('MaxIter', 500));
 
 %get the predicted value for each cluster
 cluster_predictions = zeros(1,K);

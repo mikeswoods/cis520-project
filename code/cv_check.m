@@ -1,4 +1,4 @@
-function [rmses] = cv_check(X, Y, learners, nfolds, combine, W, nshuffle)
+function [rmses] = cv_check(X, Y, learners, nfolds, W, nshuffle)
 %
 % Calculates the root-mean squared error of the given prediction data
 % by way of N-fold cross validation.
@@ -32,30 +32,25 @@ function [rmses] = cv_check(X, Y, learners, nfolds, combine, W, nshuffle)
 %   cross-validationfolds that X and Y should be divided into. If an
 %   explicit value for nfold is omitted, a default value of 5 will be used.
 %
-% [combine] How the predictions will be combined. 
-%   - 'average' for weighted average
-%   - 'majority' for weighted majority vote.
-%   If omitted, 'average' will be used
-%
 % [W] is a K x 1 vector of weights used weigh the prediction results of K
 %   learners. This is noly used when combine = 'average'. If omitted,
 %   equal weights will be used
 
+N = size(X, 1);
 K = numel(learners);
+
+rmses = nan(nfolds, 4);
+B_regress = nan(nfolds, K); % Linear Regression weights
+B_stepwise = nan(nfolds, K); % Stepwise Regression weights
+traintimes = nan(nfolds, 1);
 
 if ~exist('nfolds', 'var')
    nfolds = 5;
 end
 
-if ~exist('combine', 'var')
-    combine = 'average';
-end
-
 if ~exist('W', 'var')
     W = ones(1, K);
 end
-
-N = size(X, 1);
 
 % Divides the training data into N-folds, each as close to equally sized 
 % as possible:
@@ -68,9 +63,7 @@ if ~exist('nshuffle', 'var')
 end
 
 cvidx = cvidx(nshuffle);
-
-rmses = nan(nfolds, 1);
-traintimes = nan(nfolds, 1);
+constrain_labels_to = [1 5];
 
 for i = 1:nfolds
    tic
@@ -84,23 +77,41 @@ for i = 1:nfolds
 
    Y_hat = run_predictions(X_train, Y_train, X_test, learners);
 
-   % Combine via weighted average/weighted vote?
-   if strcmp(combine, 'average') == 1
-       Y_hat = weighted_average(W, Y_hat);
-   elseif strcmp(combine, 'majority') == 1
-       Y_hat = majority_vote(Y_hat);
-   else
-       error('combine must either be "average" or "majority"');
-   end
+   % -- (1) Weighted average /w constant weights
+   rmses(i, 1) = calc_rsme(weighted_average(W, Y_hat, constrain_labels_to), Y_test);
 
-   rmses(i) = sqrt(mean((Y_hat - Y_test) .^ 2));
+   % -- (2) Weighted average with weights determined by linear regression
+   b = regress(Y_test, Y_hat);
+   B_regress(i, :) = b';
+   rmses(i, 2) = calc_rsme(weighted_average(B_regress(i, :), Y_hat, constrain_labels_to), Y_test);
 
-   fprintf(' RMSE: %.3f\n', rmses(i))
+   % -- (3) Weighted average with weights determined by stepwise regression
+   b = stepwisefit(Y_hat, Y_test, 'display', 'off');
+   B_stepwise(i, :) = b';
+   rmses(i, 3) = calc_rsme(weighted_average(B_stepwise(i, :), Y_hat, constrain_labels_to), Y_test);
+   
+   % --- (4) Majority vote ---
+   rmses(i, 4) = calc_rsme(majority_vote(Y_hat), Y_test);
 
+   % --- (5) Adaptive weighted vote ---
+   rmses(i, 5) = calc_rsme(weighted_majority_vote(Y_hat, Y), Y_test);
+   
+   fprintf(' RMSE: (avg-const) %.3f, (avg-regress) %.3f, (avg-stepwise) %.3f, (maj) %.3f, (weighted-maj) %.3f\n', ...
+       rmses(i, 1), rmses(i, 2), rmses(i, 3), rmses(i, 4), rmses(i, 5));
    traintimes(i) = toc;
 end
 
-fprintf('Mean RMSE: %.3f\n', mean(rmses))
+fprintf('Mean RMSE avg-const: %.3f\n', mean(rmses(:,1)))
+fprintf('Mean RMSE avg-regress: %.3f\n', mean(rmses(:,2)))
+fprintf('Mean avg-regress weights: %s\n',mat2str(mean(B_regress)))
+fprintf('Mean RMSE avg-stepwise: %.3f\n', mean(rmses(:,3)))
+fprintf('Mean avg-stepwise weights: %s\n',mat2str(mean(B_stepwise)))
+fprintf('Mean RMSE maj: %.3f\n', mean(rmses(:,4)))
+fprintf('Mean RMSE weighted-maj: %.3f\n', mean(rmses(:,5)))
 fprintf('Mean train time: %.3f\n', mean(traintimes))
+end
+
+function [val] = calc_rsme(Y_hat, Y_test)
+    val = sqrt(mean((Y_hat - Y_test) .^ 2));
 end
 
