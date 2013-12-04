@@ -16,7 +16,7 @@ clear quiz train
 
 addpath packages
 
-models = generate_models(Xt_counts, Yt, 'counts_logit_reg', 'nb');
+models = generate_models(Xt_counts, Yt, 'counts_logit_reg', 'nb', 'counts_svm', 'kmeans');
 
 fprintf('Saving models...\n')
 
