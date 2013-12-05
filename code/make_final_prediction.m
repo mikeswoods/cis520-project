@@ -10,11 +10,6 @@ function prediction = make_final_prediction(model,test_words,test_meta)
 %
 % **Note: the function will only take 1 sample each time.
 
-addpath(genpath(fullfile(pwd, 'liblinear-1.94')))
-addpath(genpath(fullfile(pwd, 'libsvm-3-2.17')))
-
-addpath(genpath(fullfile(pwd, 'packages')))
-
 K = numel(model.models_idx);
 N = 1;
 
@@ -25,8 +20,12 @@ for i = 1:K
 
     % Get the <model_name>.predict function from each method as the predictor
     predictor = str2func([model_name '.predict']);
+    if strcmp(model_name,'nb')
+        Yhat(i) = predict_nb(model.models.(model_name), test_words, model.nb_mat);
+    else
+        Yhat(i) = predictor(model.models.(model_name), test_words);
+    end
     
-    Yhat(i) = predictor(model.models.(model_name), test_words);
 end
 
 % Weight everything equally for now
