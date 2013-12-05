@@ -20,7 +20,5 @@ else
    opts = [opts default_opts];
 end
 
-addpath liblinear-1.94/matlab
-
 model = train(Y_train, X_train, opts);
 end
