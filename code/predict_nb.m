@@ -64,6 +64,7 @@ if hadInvalid
     test(wasInvalid,:)= [];
 end
 
+%send as a third parameter our precalculated matrix
 log_condPdf = NaiveBayes2.getlogCondPDF(obj,test,nb_mat,handleMissing);
 gpre = NaiveBayes2.getClassIdx(obj,log_condPdf);
 %convert class index to the corresponding class levels

@@ -199,14 +199,19 @@ classdef NaiveBayes2
             logCondPDF = NaN(nTest, obj.NClasses);
             if  isscalar(obj.Dist) && strcmp(obj.Dist,'mn')
                 %The fitted probabilities are guaranteed to be non-zero.
-                logpw = log(nb_mat);
+                logpw = log(nb_mat); %replaced the call to cell2mat with our precalculated matrix here
                 %cell2mat discards empty rows corresponding to empty classes
                 if strcmp(handleNaNs,'on')
                     test(isnan(test)) = 0;
                 end
                 len = sum(test,2);
                 lnCoe = gammaln(len+1) - sum(gammaln(test+1),2);
+                
+                %manually create a version of non_empty_classes with the
+                %values from a known good run, could not get
+                %obj.NonEmptyClasses to do anything, this was easier
                 non_empty_classes = [1 2 3 4 5];
+                
                 logCondPDF(:,non_empty_classes) = bsxfun(@plus,test * logpw', lnCoe);
                 
             else % 'normal', 'kernel' or 'mvmn'

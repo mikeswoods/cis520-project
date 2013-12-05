@@ -21,6 +21,7 @@ for i = 1:K
     % Get the <model_name>.predict function from each method as the predictor
     predictor = str2func([model_name '.predict']);
     if strcmp(model_name,'nb')
+        %send as a third parameter our precalculated matrix, to speed things up
         Yhat(i) = predict_nb(model.models.(model_name), test_words, model.nb_mat);
     else
         Yhat(i) = predictor(model.models.(model_name), test_words);
