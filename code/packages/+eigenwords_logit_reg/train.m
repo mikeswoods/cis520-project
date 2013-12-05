@@ -1,6 +1,6 @@
 function [model] = train(X_train, Y_train, opts)
 %
-% EIGENWORDS_SVM.TRAIN(train_labels, train_data, opts)
+% EIGENWORDS_LOGIT_REG.TRAIN(train_labels, train_data, opts)
 %
 % [X_train] A N x M matrix of training data, where N is the number of
 %   observations, and M is the number of features
@@ -21,14 +21,12 @@ end
 
 svs_file = '../data/eigenwords/N2/eigenwords_top_25.mat';
 svs = load(svs_file);
-[centroids_U, centroids_V] = eigenwords_svm.make_centroids(X_train, svs.UB, svs.VB);
+[centroids_U, centroids_V] = eigenwords_logit_reg.make_centroids(X_train, svs.UB, svs.VB);
 
 centroids = [centroids_U centroids_V];
-
 clear svs centroids_U centroids_V;
 
-%addpath libsvm-3-2.17/matlab
-svm = svmtrain(Y_train, centroids, [opts ' -t 3']);
+B = mnrfit(centroids, Y_train);
 
-model = struct('svm', svm, 'svs_file', svs_file);
+model = struct('B', B, 'svs_file', svs_file);
 end

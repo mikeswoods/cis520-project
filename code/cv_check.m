@@ -36,6 +36,9 @@ function [rmses] = cv_check(X, Y, learners, nfolds, W, nshuffle)
 %   learners. This is noly used when combine = 'average'. If omitted,
 %   equal weights will be used
 
+addpath packages;
+addpath liblinear-1.94/matlab;
+
 N = size(X, 1);
 K = numel(learners);
 

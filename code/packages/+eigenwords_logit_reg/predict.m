@@ -1,6 +1,6 @@
 function [Y] = predict(model, X_test)
 %
-% EIGENWORDS_SVM.PREDICT(X_test, model)
+% EIGENWORDS_LOGIT_REG.PREDICT(X_test, model)
 %
 % [X_test] A N x M matrix of test data, where N is the number of
 %   observations, and M is the number of features
@@ -10,16 +10,12 @@ function [Y] = predict(model, X_test)
 % 
 % [Y] A N x 1 vector of predicted labels
 %
-N = size(X_test, 1);
 
 svs = load(model.svs_file);
-
-[centroids_U, centroids_V] = eigenwords_svm.make_centroids(X_test, svs.UB, svs.VB);
+[centroids_U, centroids_V] = eigenwords_logit_reg.make_centroids(X_test, svs.UB, svs.VB);
 centroids = [centroids_U centroids_V];
-
 clear svs centroids_U centroids_V;
 
-%addpath libsvm-3-2.17/matlab
-Y = svmpredict(zeros(N, 1), centroids, model.svm);
-
+R = mnrval(model.B, centroids);
+[~, Y] = max(R, [], 2);
 end
