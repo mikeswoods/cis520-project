@@ -72,16 +72,15 @@ for i = 1:nfolds
    tic
    fprintf('%d/%d ', i, nfolds)
 
+   train_idx = find(cvidx ~= i);
    X_train = X(cvidx ~= i, :);
    Y_train = Y(cvidx ~= i);
 
+   test_idx = find(cvidx == i);
    X_test = X(cvidx == i, :);
    Y_test = Y(cvidx == i);
 
-   train_idx = cvidx ~= i;
-   test_idx = cvidx == i;
-
-   Y_hat = run_predictions(X_train, Y_train, X_test, find(train_idx ~= 0), find(test_idx ~= 0), learners);
+   Y_hat = run_predictions(X_train, Y_train, X_test, train_idx, test_idx, learners);
 
    % -- (1) Weighted average /w constant weights
    rmses(i, 1) = calc_rsme(weighted_average(W, Y_hat, constrain_labels_to), Y_test);
