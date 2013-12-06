@@ -24,7 +24,8 @@ for i = 1:K
         %send as a third parameter our precalculated matrix, to speed things up
         Yhat(i) = predict_nb(model.models.(model_name), test_words, model.nb_mat);
     else
-        Yhat(i) = predictor(model.models.(model_name), test_words);
+        % Passed index is not known, so use NaN
+        Yhat(i) = predictor(model.models.(model_name), test_words, NaN);
     end
     
 end

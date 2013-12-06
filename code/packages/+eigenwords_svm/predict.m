@@ -1,4 +1,4 @@
-function [Y] = predict(model, X_test)
+function [Y] = predict(model, X_test, test_idx)
 %
 % EIGENWORDS_SVM.PREDICT(X_test, model)
 %

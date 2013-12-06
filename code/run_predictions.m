@@ -1,4 +1,4 @@
-function  [Y_hat] = run_predictions(X_train, Y_train, X_test, learners)
+function  [Y_hat] = run_predictions(X_train, Y_train, X_test, train_idx, test_idx, learners)
 %
 % Runs the test() funtion for each of the given learners, collecting
 % the results into the Y_hat matrix
@@ -10,6 +10,10 @@ function  [Y_hat] = run_predictions(X_train, Y_train, X_test, learners)
 % [Y_train] is a N x 1 vector of training labels
 %
 % [X_test] Q x M matrix of test observation
+%
+% [train_idx] The Q x 1 of selected training indices
+%
+% [test_idx] The P x 1 of selected training indices
 %
 % [learners] is a K x 1 vector of learner package names or function 
 %   handles. If an entry is a function handle, the function is expected
@@ -36,7 +40,7 @@ Y_hat = zeros(N, K);
 
 for i = 1:K
     test_func = get_test_function(learners{i});
-    Y_hat(:, i) = test_func(X_train, Y_train, X_test);
+    Y_hat(:, i) = test_func(X_train, Y_train, X_test, train_idx, test_idx);
 end
 
 end

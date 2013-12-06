@@ -1,4 +1,4 @@
-function [model] = train(X_train, Y_train, opts)
+function [model] = train(X_train, Y_train, train_idx, opts)
 %
 % NB.TRAIN(train_labels, train_data, opts)
 %
@@ -6,6 +6,8 @@ function [model] = train(X_train, Y_train, opts)
 %   observations, and M is the number of features
 %
 % [Y_train] A N x 1 vector of training labels
+%
+% [train_idx] The N x 1 of selected training indices
 %
 % [opts] Options used for training the learner. This value is optional
 %

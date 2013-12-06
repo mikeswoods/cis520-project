@@ -20,6 +20,7 @@ function [models] = generate_models(X_train, Y_train, varargin)
 addpath packages
 
 K = numel(varargin);
+N = numel(Y_train);
 
 for i = 1:K
     
@@ -43,7 +44,7 @@ for i = 1:K
     % Each model has an entry in the model struct given by its package
     % name. It can be accessed dynamically using the sytax
     % <var>.("package-name")
-    models.(pkg_name) = trainer(X_train, Y_train, k_run_with{:});
+    models.(pkg_name) = trainer(X_train, Y_train, 1:N, k_run_with{:});
 end
 
 end

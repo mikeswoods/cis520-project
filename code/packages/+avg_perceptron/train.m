@@ -1,4 +1,4 @@
-function [W] = train(X, Y, opts)
+function [W] = train(X, Y, train_idx, opts)
 % Trains a multi-class, averaged perceptron model
 %
 % For a N x D sparse feature matrix X and Nx1 label matrix Y, returns
@@ -7,7 +7,9 @@ function [W] = train(X, Y, opts)
 % [X] N x M matrix of observations
 %
 % [Y] N x 1 vector of labels
-% 
+%
+% [train_idx] The N x 1 of selected training indices
+%
 % [opts] Options struct
 %
 % 'numPasses' is the number of times of passing the whole dataset through perceptron.

@@ -1,4 +1,4 @@
-function [Y_predict] = test(X_train, Y_train, X_test)
+function [Y_predict] = test(X_train, Y_train, X_test, train_idx, test_idx)
 %
 % This is the function that is passed to the cross-validation testing
 % code
@@ -13,11 +13,15 @@ function [Y_predict] = test(X_train, Y_train, X_test)
 % [X_test] A N x M matrix of test data, where N is the number of
 %   observations, and M is the number of features
 %
+% [train_idx] The Q x 1 of selected training indices
+%
+% [test_idx] The P x 1 of selected training indices
+%
 % [Y_predict] A N x 1 vector of predicted labels
 %
 
-model = eigenwords_logit_reg.train(X_train, Y_train);
+model = eigenwords_logit_reg.train(X_train, Y_train, train_idx);
 
-Y_predict = eigenwords_logit_reg.predict(model, X_test);
+Y_predict = eigenwords_logit_reg.predict(model, X_test, test_idx);
 
 end
