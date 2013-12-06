@@ -55,9 +55,9 @@ for p=1:numPasses
 
         actual_k = Y_to_K(y_i);
 
-        if mod(total, 1000) == 0
-            fprintf('pass = %d of %d, %d | correct = %f\n', p, numPasses, i, correct / total);
-        end
+%         if mod(total, 1000) == 0
+%             fprintf('pass = %d of %d, %d | correct = %f\n', p, numPasses, i, correct / total);
+%         end
 
         if predicted_k == actual_k
             % If correct, no change

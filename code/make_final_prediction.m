@@ -33,4 +33,11 @@ end
 % Weight everything equally for now
 model_weights = ones(1, K);
 
+% Model weights should be substituted with experimentally determined weights
+% via cv_check. NOTE: It is important to keep the order of the weights the same as the
+% as the learner it is associated with 
+
+% b = regress(Y_test, Y_hat);
+% B_regress(i, :) = b';
+
 prediction = int8(weighted_average(model_weights, Yhat, [1 5]));
