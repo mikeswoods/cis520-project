@@ -39,8 +39,8 @@ for i = 1:K
     % Get the <model_name>.predict function from eah method as the predictor
     predictor = str2func([model_name '.predict']);
     
-    %Yhat(:, i) = predictor(models.(model_name), Xq_counts, 1:N);
-    Yhat(:, i) = predictor(models.(model_name), horzcat(Xq_counts, sparse(Xq_additional_features)), 1:N);
+    Yhat(:, i) = predictor(models.(model_name), Xq_counts, 1:N);
+    %Yhat(:, i) = predictor(models.(model_name), horzcat(Xq_counts, sparse(Xq_additional_features)), 1:N);
 end
 
 % Weight everything equally for now
