@@ -46,6 +46,8 @@ for p=1:numPasses
     correct = 0;
     total = 0;
     
+    fprintf('MULTI_MIRA_PERCEPTRON: Pass %d of %d\n', p, numPasses);
+
     for i=1:N
         x_i = X_train(i,:);
         x_i_T = x_i';
