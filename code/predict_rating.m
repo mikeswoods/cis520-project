@@ -39,11 +39,15 @@ for i = 1:K
     % Get the <model_name>.predict function from eah method as the predictor
     predictor = str2func([model_name '.predict']);
     
-    Yhat(:, i) = predictor(models.(model_name), Xq_counts, 1:N);
+    %Yhat(:, i) = predictor(models.(model_name), Xq_counts, 1:N);
+    Yhat(:, i) = predictor(models.(model_name), horzcat(Xq_counts, sparse(Xq_additional_features)), 1:N);
 end
 
 % Weight everything equally for now
-model_weights = ones(1, K);
+%model_weights = ones(1, K);
+
+%weights as determined via xval avg-regress
+model_weights = [0.347245616173471 0.438246295558858 0.163993550999013];
 
 rates = int8(weighted_average(model_weights, Yhat, [1 5]));
 
