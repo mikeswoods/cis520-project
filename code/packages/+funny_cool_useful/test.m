@@ -3,7 +3,7 @@ function [Y_predict] = test(X_train, Y_train, X_test, train_idx, test_idx)
 % This is the function that is passed to the cross-validation testing
 % code
 %
-% USER_CLASSIFIER.TEST(X_train, Y_train, X_test)
+% BUSINESS_USER_CLASSIFIER.TEST(X_train, Y_train, X_test)
 %
 % [X_train] A N x M matrix of training data, where N is the number of
 %   observations, and M is the number of features
@@ -20,8 +20,8 @@ function [Y_predict] = test(X_train, Y_train, X_test, train_idx, test_idx)
 % [Y_predict] A N x 1 vector of predicted labels
 %
 
-model = user_classifier.train(X_train, Y_train, train_idx);
+model = funny_cool_useful.train(X_train, Y_train, train_idx);
 
-Y_predict = user_classifier.predict(model, X_test, test_idx);
+Y_predict = funny_cool_useful.predict(model, X_test, test_idx);
 
 end
