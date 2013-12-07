@@ -31,7 +31,10 @@ for i = 1:K
 end
 
 % Weight everything equally for now
-model_weights = ones(1, K);
+%model_weights = ones(1, K);
+
+%weights as determined by xval
+model_weights = [0.416902650536165 0.367828166019418 0.171931087823939];
 
 % Model weights should be substituted with experimentally determined weights
 % via cv_check. NOTE: It is important to keep the order of the weights the same as the
