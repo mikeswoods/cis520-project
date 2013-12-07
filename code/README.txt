@@ -25,7 +25,7 @@ This is logistic regression with the Training Counts.
 This is SVM with the Training Counts.
 
 *eigenwords_logit_reg
-Bigram matrices were generated from the combined training and quiz sets. We ran SVD on the bigram matrices, generating reduced-dimension left and right singular vectors (U and V respectively) for each word in the vocabulary. Predictors for each document were the average position (centroid) of the document's words in the reduced-dimension space.
+Bigram matrices were generated from the combined training and quiz sets (using the complete text as found in metadata). We ran SVD on the bigram matrices, generating reduced-dimension left and right singular vectors (U and V respectively) for each word in the vocabulary. Predictors for each document were the average position (centroid) of the document's words in the reduced-dimension space.
 
 This model uses these centroids (in both U- and V-space) as features in a logistic regression classifier.
 
