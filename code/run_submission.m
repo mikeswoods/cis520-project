@@ -17,7 +17,7 @@ clear quiz train
 
 addpath packages
 
-models = generate_models(Xt_counts, Yt, 'counts_logit_reg', 'nb', 'counts_svm');
+models = generate_models(Xt_counts, Yt,'funny_cool_useful', 'business_user_classifier2', 'counts_logit_reg','counts_svm', 'nb' );
 %models = generate_models(horzcat(Xt_counts, sparse(new_features)), Yt, 'counts_logit_reg', 'nb', 'counts_svm');
 
 fprintf('Saving models...\n')
@@ -32,8 +32,7 @@ initialize_additional_features;
 
 fprintf('Predicting labels...\n')
 
-rates = predict_rating(Xt_counts, Xq_counts, Xt_additional_features,...
-                       Xq_additional_features, Yt);
+rates = predict_rating(Xt_counts, Xq_counts, Xt_additional_features, Xq_additional_features, Yt);
 
 %% Save results to a text file for submission
 
