@@ -25,8 +25,12 @@ This is logistic regression with the Training Counts.
 This is SVM with the Training Counts.
 
 *eigenwords_logit_reg
+Bigram matrices were generated from the combined training and quiz sets. We ran SVD on the bigram matrices, generating reduced-dimension left and right singular vectors (U and V respectively) for each word in the vocabulary. Predictors for each document were the average position (centroid) of the document's words in the reduced-dimension space.
+
+This model uses these centroids (in both U- and V-space) as features in a logistic regression classifier.
 
 *eigenwords_svm
+See above for eigenword generation. This model uses the centroids as features in a support vector machine classifier.
 
 *funny_cool_useful/funny_cool_useful_user
 This is a logistic regression approach using the funny/cool/useful field values, and funny_cool_useful_user combines the average user rating feature into the mix (since users write reviews).
