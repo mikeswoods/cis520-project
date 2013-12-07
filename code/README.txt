@@ -39,6 +39,7 @@ This is a logistic regression approach using the funny/cool/useful field values,
 This is kmeans of the top 100 or so principal components reconstructed using SVDS. Predictions done with the minimum distance between the cluster centroids.
 
 *multi_mira_perceptron
+This is a multi layer perceptron algorithm using the MIRA classifier for online learning.
 
 *nb
 This is Naive Bayes using the Training Counts.
