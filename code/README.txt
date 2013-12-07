@@ -9,6 +9,8 @@ Then look at the packages folder, each package (folders that start with a +) con
 You can run cross validation with: cv_check(Xt_counts, Yt, {'funny_cool_useful', 'business_user_classifier2'}, 10);
 Once again, just list the models you want to run x-val against.
 
+You may have to change the paths to relevant files for training runs, we created the whole thing assuming we had access to the data directory one dir up. Also some of data we created for training exceeds the 50mb limit, so obviously that was not included.
+
 *avg_perceptron
 INCOMPLETE, ignore
 
