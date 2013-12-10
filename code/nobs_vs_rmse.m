@@ -51,8 +51,11 @@ end
 if ~exist('test_pct', 'var')
    test_pct = 1-max(obs_pcts);
 end
-if test_pct > 1-max(obs_pcts);
+if round(N*max(obs_pcts))+round(N*test_pct)>N;
    error('Test percentage greater than the number of untrained observations.')
+end
+if ~iscell(learner)
+   learner = {learner};
 end
 
 rmses = nan(length(obs_pcts),nreps);
@@ -60,24 +63,27 @@ rmses = nan(length(obs_pcts),nreps);
 for i = 1:length(obs_pcts)
    nobs = round(N*obs_pcts(i));
    ntest = round(N*test_pct);
+   fprintf('Number of test points: %d/%d\n',ntest,N)
    idx = zeros(N,1);
    idx(1:nobs) = 1;
    idx(nobs+1:nobs+ntest) = 2;
    
    for j = 1:nreps
+      fprintf(' rep %d... ',j)
       idx = idx(randperm(N));
       train_idx = idx==1;
       test_idx = idx==2;
       
       X_train = X(train_idx,:);
-      Y_train = Y(train_idx==1);
+      Y_train = Y(train_idx);
       
-      X_test = X(test_idx==2,:);
-      Y_test = Y(test_idx==2);
+      X_test = X(test_idx,:);
+      Y_test = Y(test_idx);
       
       Y_hat = run_predictions(X_train, Y_train, X_test, train_idx, test_idx, learner);
       
       rmses(i,j) = calc_rsme(Y_hat,Y_test);
+      fprintf('  RMSE: %.4f\n',rmses(i,j))
    end
 end
 
