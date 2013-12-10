@@ -72,8 +72,8 @@ for i = 1:length(obs_pcts)
       X_train = X(train_idx,:);
       Y_train = Y(train_idx==1);
       
-      X_test = X(test_idx==2,:);
-      Y_test = Y(test_idx==2);
+      X_test = X(test_idx==1,:);
+      Y_test = Y(test_idx==1);
       
       Y_hat = run_predictions(X_train, Y_train, X_test, train_idx, test_idx, learner);
       
