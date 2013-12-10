@@ -63,7 +63,7 @@ rmses = nan(length(obs_pcts),nreps);
 for i = 1:length(obs_pcts)
    nobs = round(N*obs_pcts(i));
    ntest = round(N*test_pct);
-   fprintf('Number of test points: %d/%d\n',ntest,N)
+   fprintf('Number of train points: %d/%d\n',nobs,N)
    idx = zeros(N,1);
    idx(1:nobs) = 1;
    idx(nobs+1:nobs+ntest) = 2;
