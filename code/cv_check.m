@@ -82,6 +82,10 @@ for i = 1:nfolds
 
    Y_hat = run_predictions(X_train, Y_train, X_test, train_idx, test_idx, learners);
 
+   for j=1:numel(learners)
+      fprintf('[%s] Correct = %f\n', learners{j}, mean(Y_hat(:,j) == Y_test));
+   end
+
    % -- (1) Weighted average /w constant weights
    rmses(i, 1) = calc_rsme(weighted_average(W, Y_hat, constrain_labels_to), Y_test);
 
