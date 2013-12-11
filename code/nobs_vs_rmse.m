@@ -1,4 +1,4 @@
-function [rmses] = nobs_vs_rmse(X, Y, learner, nreps, obs_pcts, test_pct)
+function [rmses,train_speed] = nobs_vs_rmse(X, Y, learner, nreps, obs_pcts, test_pct)
 %
 % Calculates the root-mean squared error of the given prediction data
 % with varying percentage of data used to train model.
@@ -59,6 +59,7 @@ if ~iscell(learner)
 end
 
 rmses = nan(length(obs_pcts),nreps);
+train_speed = nan(length(obs_pcts),nreps);
 
 for i = 1:length(obs_pcts)
    nobs = round(N*obs_pcts(i));
@@ -80,9 +81,11 @@ for i = 1:length(obs_pcts)
       X_test = X(test_idx,:);
       Y_test = Y(test_idx);
       
+      tic
       Y_hat = run_predictions(X_train, Y_train, X_test, train_idx, test_idx, learner);
       
       rmses(i,j) = calc_rsme(Y_hat,Y_test);
+      train_speed(i,j) = toc;
       fprintf('  RMSE: %.4f\n',rmses(i,j))
    end
 end
